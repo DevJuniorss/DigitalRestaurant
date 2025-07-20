@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
 import { EstruturaRefeicoesForm } from "@/components/DietForms/DietForms";
+import { AddMeal } from "@/components/AddMeal/AddMeal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,7 +17,11 @@ export default function Home() {
   return (
     <div>
       <h2>Home</h2>
-      <EstruturaRefeicoesForm />
+      <AddMeal onCancel={function (): void {
+        throw new Error("Function not implemented.");
+      }} onSave={function (data: any): void {
+        throw new Error("Function not implemented.");
+      }} />
     </div>
   );
 }

@@ -1,22 +1,4 @@
 // types/diet.ts
-export type Aluno = {
-  id: number;
-  nome: string;
-  email: string;
-  idade: number;
-};
-export type FoodItem = {
-  alimento: string;
-  quantidade: number;
-  unidade: string;
-  observacoes?: string;
-};
-
-export type Refeicao = {
-  nome: string;
-  horario: string;
-  alimentos: FoodItem[];
-};
 
 export type DietaPlan = {
   aluno: Aluno | null;
@@ -29,9 +11,35 @@ export type DietaPlan = {
   observacoesAdicionais: string;
 };
 
+
+
+export type FoodItem = {
+  alimento: string;
+  quantidade: number;
+  unidade: string;
+  observacoes?: string;
+  // Valores nutricionais para cálculo
+  calorias?: number;
+  proteinas?: number;
+  carboidratos?: number;
+  gorduras?: number;
+};
+
+export type Refeicao = {
+  nome: string;
+  horario: string;
+  alimentos: FoodItem[];
+};
+
+export type Aluno = {
+  id: number;
+  nome: string;
+  email: string;
+};
+
 export type ResumoNutricional = {
-  calorias: number;
-  proteinas: number;
-  carboidratos: number;
-  gorduras: number;
+  caloriasTotais: number;
+  proteinasTotais: number;
+  carboidratosTotais: number;
+  gordurasTotais: number;
 };
