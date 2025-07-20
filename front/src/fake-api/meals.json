@@ -1,0 +1,86 @@
+[
+  {
+    "id": 1,
+    "title": "Almoço",
+    "groups": [
+      { "title": "Proteínas", "items": ["Feijoada", "Coxa de frango frita", "Bolinha de batata"] },
+      { "title": "Carboidratos", "items": ["Arroz", "Macarrão", "Feijão"] },
+      { "title": "Sucos", "items": ["Goiaba"] },
+      { "title": "Doce", "items": ["Doce de leite"] },
+      { "title": "Salada", "items": ["Alface, melão, cebola"] },
+      { "title": "Fruta", "items": ["Melão"] }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Jantar",
+    "groups": [
+      { "title": "Proteínas", "items": ["Peixe grelhado"] },
+      { "title": "Carboidratos", "items": ["Purê de batata", "Arroz integral"] },
+      { "title": "Sucos", "items": ["Laranja"] },
+      { "title": "Doce", "items": ["Pudim"] },
+      { "title": "Salada", "items": ["Alface, tomate"] },
+      { "title": "Fruta", "items": ["Maçã"] }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Café da Manhã",
+    "groups": [
+      { "title": "Proteínas", "items": ["Ovos mexidos"] },
+      { "title": "Carboidratos", "items": ["Pão integral"] },
+      { "title": "Sucos", "items": ["Abacaxi"] },
+      { "title": "Doce", "items": ["Geleia de morango"] },
+      { "title": "Salada", "items": ["Frutas picadas"] },
+      { "title": "Fruta", "items": ["Banana"] }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Almoço",
+    "groups": [
+      { "title": "Proteínas", "items": ["Bife acebolado"] },
+      { "title": "Carboidratos", "items": ["Arroz branco", "Feijão preto"] },
+      { "title": "Sucos", "items": ["Caju"] },
+      { "title": "Doce", "items": ["Brigadeiro"] },
+      { "title": "Salada", "items": ["Couve, cenoura, tomate"] },
+      { "title": "Fruta", "items": ["Mamão"] }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Jantar",
+    "groups": [
+      { "title": "Proteínas", "items": ["Frango grelhado"] },
+      { "title": "Carboidratos", "items": ["Batata doce", "Quinoa"] },
+      { "title": "Sucos", "items": ["Maracujá"] },
+      { "title": "Doce", "items": ["Mousse de maracujá"] },
+      { "title": "Salada", "items": ["Alface, rúcula"] },
+      { "title": "Fruta", "items": ["Pera"] }
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Café da Manhã",
+    "groups": [
+      { "title": "Proteínas", "items": ["Iogurte natural"] },
+      { "title": "Carboidratos", "items": ["Granola", "Torrada"] },
+      { "title": "Sucos", "items": ["Uva"] },
+      { "title": "Doce", "items": ["Mel"] },
+      { "title": "Salada", "items": ["Frutas da estação"] },
+      { "title": "Fruta", "items": ["Kiwi"] }
+    ]
+  },
+  {
+    "id": 7,
+    "title": "Almoço",
+    "groups": [
+      { "title": "Proteínas", "items": ["Costela assada"] },
+      { "title": "Carboidratos", "items": ["Polenta", "Feijão carioca"] },
+      { "title": "Sucos", "items": ["Limão"] },
+      { "title": "Doce", "items": ["Pavê"] },
+      { "title": "Salada", "items": ["Alface americana, cenoura"] },
+      { "title": "Fruta", "items": ["Abacaxi"] }
+    ]
+  }
+]
