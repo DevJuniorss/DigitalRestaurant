@@ -6,6 +6,7 @@ export type DietaPlan = {
   profissionalResponsavel: string;
   dataInicio: string;
   dataFim: string;
+  objetivo: string;
   comorbidades: string;
   refeicoes: Refeicao[];
   observacoesAdicionais: string;
