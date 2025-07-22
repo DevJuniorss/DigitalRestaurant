@@ -1,0 +1,40 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
+  background: #fff;
+  border-bottom: 2px solid #e9ecef;
+  padding: 0 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.left {
+  flex: 1;
+}
+
+.center {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+}
+
+.right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .header {
+    padding: 0 1rem;
+  }
+  .center {
+    display: none; /* oculta navbar central em telas menores */
+  }
+}

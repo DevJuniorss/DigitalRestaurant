@@ -10,7 +10,6 @@ const weekCards = weekDays.map((day, idx) => ({
 export default function CalendarPage() {
   return (
     <main>
-      <h1>Calendário Semanal de Refeições</h1>
       <WeeklyCalendar weekCards={weekCards} />
     </main>
   );

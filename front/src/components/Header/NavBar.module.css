@@ -1,0 +1,27 @@
+.navList {
+  display: flex;
+  gap: 2.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.navList li a {
+  color: #495057;
+  font-weight: 500;
+  font-size: 1.05rem;
+  text-decoration: none;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.navList li a:hover,
+.navList li a:focus {
+  color: #1566e0;
+  background: #f8faff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(21, 102, 224, 0.25);
+}

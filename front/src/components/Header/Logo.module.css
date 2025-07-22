@@ -1,0 +1,8 @@
+.logo {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #1566e0 0%, #10aaff 100%);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(21, 102, 224, 0.3);
+  cursor: pointer;
+}
