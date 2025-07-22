@@ -35,6 +35,11 @@ export const EstruturaRefeicoesForm: React.FC = () => {
   const [comorbidades, setComorbidades] = useState('');
   const [observacoesAdicionais, setObservacoesAdicionais] = useState('');
 
+  // Estado para o plano de dieta
+  const [dietaPlan, setDietaPlan] = useState<DietaPlan[]>([
+    { aluno, nomeDieta, profissionalResponsavel, dataInicio, dataFim, comorbidades: '', refeicoes: [], objetivo: '', observacoesAdicionais: '' }
+  ]);
+
   const [refeicoes, setRefeicoes] = useState<Refeicao[]>([
     { nome: '', horario: '', alimentos: [{ alimento: '', quantidade: 0, unidade: '' }] }
   ]);
@@ -69,7 +74,13 @@ export const EstruturaRefeicoesForm: React.FC = () => {
       carboidratosTotais: Math.round(carboidratos * 10) / 10,
       gordurasTotais: Math.round(gorduras * 10) / 10,
     });
+    
   }, [refeicoes]);
+
+  useEffect(() => {
+    // Carregar rascunho salvo ao montar o componente
+    carregarRascunho();
+  }, []);
 
   // Funções existentes (updateRefeicao, updateAlimento, etc.) mantidas iguais...
   const updateRefeicao = (index: number, field: keyof Refeicao, value: any) => {
@@ -129,14 +140,103 @@ export const EstruturaRefeicoesForm: React.FC = () => {
     );
   };
 
-  // Funções dos botões de ação
-  const handleSalvarDieta = () => {
-    console.log('Salvando dieta...');
+  const salvarComoJson = async (dados: any, nomeArquivo: string) => {
+    const jsonString = JSON.stringify(dados, null, 2);
+
+    const blob = new Blob([jsonString], { type: 'application/json' });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = nomeArquivo || 'dados.json';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+
   };
 
-  const handleSalvarRascunho = () => {
-    console.log('Salvando como rascunho...');
+  // Funções dos botões de ação
+  const handleSalvarDieta = async () => {
+
+    const dadosAtuaisDaDieta = {
+      aluno,
+      nomeDieta,
+      profissionalResponsavel,
+      dataInicio,
+      dataFim,
+      objetivo,
+      comorbidades,
+      refeicoes, // 'refeicoes' vem do estado e está atualizado.
+      observacoesAdicionais,
+    };
+    setDietaPlan([dadosAtuaisDaDieta]); // Atualiza o estado com os dados atuais
+    const nomeDoArquivo = `dieta_${dadosAtuaisDaDieta.aluno?.nome || 'aluno'}_${dadosAtuaisDaDieta.nomeDieta || 'plano'}.json`;
+    try {
+      await salvarComoJson([dadosAtuaisDaDieta], nomeDoArquivo);
+      alert('Seu plano de dieta foi salvo com sucesso!');
+      localStorage.removeItem('rascunhoDieta');
+    } catch (error) {
+      console.error('Erro ao salvar o plano de dieta:', error);
+      alert('Ocorreu um erro ao salvar o plano de dieta. Por favor, tente novamente.');
+    }
   };
+
+  const carregarRascunho = () => {
+    try {
+        const rascunhoSalvo = localStorage.getItem('rascunhoDieta');
+
+        if (rascunhoSalvo) {
+            console.log("Rascunho encontrado! Carregando...");
+            const dadosDoRascunho = JSON.parse(rascunhoSalvo);
+
+            // Atualiza todos os estados do formulário com os dados do rascunho
+            setAluno(dadosDoRascunho.aluno || null);
+            setNomeDieta(dadosDoRascunho.nomeDieta || '');
+            setProfissionalResponsavel(dadosDoRascunho.profissionalResponsavel || '');
+            setDataInicio(dadosDoRascunho.dataInicio || '');
+            setDataFim(dadosDoRascunho.dataFim || '');
+            setObjetivo(dadosDoRascunho.objetivo || '');
+            setComorbidades(dadosDoRascunho.comorbidades || '');
+            setRefeicoes(dadosDoRascunho.refeicoes || [{ nome: '', horario: '', alimentos: [] }]);
+            setObservacoesAdicionais(dadosDoRascunho.observacoesAdicionais || '');
+
+            alert('Um rascunho salvo foi carregado.');
+        }
+    } catch (error) {
+        console.error("Erro ao carregar ou processar o rascunho:", error);
+        // Opcional: remover o rascunho corrompido
+        localStorage.removeItem('rascunhoDieta');
+    }
+};
+
+  const handleSalvarRascunho = () => {
+    const dadosRascunho = {
+      aluno,
+      nomeDieta,
+      profissionalResponsavel,
+      dataInicio,
+      dataFim,
+      objetivo,
+      comorbidades,
+      refeicoes,
+      observacoesAdicionais,
+      isRascunho: true,
+    };
+    try {
+      const dadosEmJson = JSON.stringify(dadosRascunho);
+      localStorage.setItem('rascunhoDieta', dadosEmJson);
+      alert('Rascunho salvo com sucesso! Você pode continuar de onde parou mais tarde.');
+    } catch (error) {
+      console.error('Erro ao salvar rascunho:', error);
+      alert('Ocorreu um erro ao salvar o rascunho. Por favor, tente novamente.');
+    }
+  };
+
+
 
   const handlePrevisualizar = () => {
     console.log('Pré-visualizando...');
