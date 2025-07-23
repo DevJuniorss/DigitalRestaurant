@@ -35,6 +35,25 @@ export const EstruturaRefeicoesForm: React.FC = () => {
   const [comorbidades, setComorbidades] = useState('');
   const [observacoesAdicionais, setObservacoesAdicionais] = useState('');
 
+  const resetForm = () => {
+  console.log('Resetando o formulário para o estado inicial...');
+  // Reseta todos os estados para seus valores iniciais
+  setAluno(null);
+  setNomeDieta('');
+  setObjetivo('');
+  setProfissionalResponsavel('');
+  setDataInicio('');
+  setDataFim('');
+  setComorbidades('');
+  setObservacoesAdicionais('');
+
+  // Reseta a estrutura de refeições para o padrão inicial
+  setRefeicoes([
+    { nome: '', horario: '', alimentos: [{ alimento: '', quantidade: 0, unidade: '' }] }
+  ]);
+  
+};
+
   // Estado para o plano de dieta
   const [dietaPlan, setDietaPlan] = useState<DietaPlan[]>([
     { aluno, nomeDieta, profissionalResponsavel, dataInicio, dataFim, comorbidades: '', refeicoes: [], objetivo: '', observacoesAdicionais: '' }
@@ -243,8 +262,17 @@ export const EstruturaRefeicoesForm: React.FC = () => {
   };
 
   const handleCancelar = () => {
-    console.log('Cancelando...');
+    const confirmacao = window.confirm('Você tem certeza que deseja cancelar? Todas as alterações não salvas, incluindo o rascunho, serão perdidas.')
+    if (confirmacao) {
+      resetForm();
+      localStorage.removeItem('rascunhoDieta'); // Limpa o rascunho salvo
+      alert('O formulário foi limpo.');
+    }
+    else{
+      alert('Operação cancelada. Você pode continuar editando o formulário.');
+    }
   };
+
 
   return (
     <form className={styles.form}>
