@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import styles from './DietForms.module.css';
-import alunosMock  from '../../fake-api/alunosMock.json';
-import unidadesMedida from '../../fake-api/unidadesMedida.json';
-import alimentosBanco from '../../fake-api/alimentosBanco.json';
 import {
   DietaPlan,
   FoodItem,
@@ -11,6 +8,22 @@ import {
   Aluno,
   ResumoNutricional,
 } from "../../types/diet";
+
+const unidadesMedida = ['g', 'ml', 'unidade', 'fatia', 'colher', 'xícara'];
+
+// Mock de dados para busca
+const alunosMock: Aluno[] = [
+  { id: 1, nome: 'João Silva', email: 'joao@email.com' },
+  { id: 2, nome: 'Maria Santos', email: 'maria@email.com' },
+  { id: 3, nome: 'Pedro Costa', email: 'pedro@email.com' },
+];
+
+const alimentosBanco = [
+  { nome: 'Arroz', calorias: 130, proteinas: 2.7, carboidratos: 28, gorduras: 0.3 },
+  { nome: 'Feijão', calorias: 76, proteinas: 4.5, carboidratos: 14, gorduras: 0.5 },
+  { nome: 'Frango', calorias: 165, proteinas: 31, carboidratos: 0, gorduras: 3.6 },
+  { nome: 'Ovo', calorias: 155, proteinas: 13, carboidratos: 1.1, gorduras: 11 },
+];
 
 export const EstruturaRefeicoesForm: React.FC = () => {
   // Estados principais
@@ -46,7 +59,7 @@ export const EstruturaRefeicoesForm: React.FC = () => {
 
     refeicoes.forEach(refeicao => {
       refeicao.alimentos.forEach(alimento => {
-        const alimentoInfo = alimentosBanco.alimentosBanco.find(a => a.nome === alimento.alimento);
+        const alimentoInfo = alimentosBanco.find(a => a.nome === alimento.alimento);
         if (alimentoInfo && alimento.quantidade > 0) {
           const fator = alimento.quantidade / 100; // considerando valores por 100g
           calorias += alimentoInfo.calorias * fator;
@@ -115,19 +128,15 @@ export const EstruturaRefeicoesForm: React.FC = () => {
   };
 
   const buscarAlimentos = (query: string) => {
-    if (!query) return alimentosBanco.alimentosBanco.map(a => a.nome);
-    return alimentosBanco.alimentosBanco
+    if (!query) return alimentosBanco.map(a => a.nome);
+    return alimentosBanco
       .filter(a => a.nome.toLowerCase().includes(query.toLowerCase()))
       .map(a => a.nome);
   };
 
   const buscarAlunos = (query: string) => {
-    const listaDeAlunos = alunosMock.alunos; 
-
-    if (!query) {
-      return listaDeAlunos; // Retorna todos os alunos se a query estiver vazia
-    }
-    return listaDeAlunos.filter(a =>
+    if (!query) return alunosMock;
+    return alunosMock.filter(a =>
       a.nome.toLowerCase().includes(query.toLowerCase()) ||
       a.email.toLowerCase().includes(query.toLowerCase())
     );
@@ -232,7 +241,7 @@ export const EstruturaRefeicoesForm: React.FC = () => {
 
 
   const handlePrevisualizar = () => {
-
+    
   };
 
   const handleCancelar = () => {
@@ -260,7 +269,7 @@ export const EstruturaRefeicoesForm: React.FC = () => {
             type="text"
             value={aluno?.nome || ''}
             onChange={(e) => {
-              const alunoEncontrado = alunosMock.alunos.find(a => a.nome === e.target.value);
+              const alunoEncontrado = alunosMock.find(a => a.nome === e.target.value);
               setAluno(alunoEncontrado || null);
             }}
             list="alunos-sugestoes"
@@ -268,8 +277,8 @@ export const EstruturaRefeicoesForm: React.FC = () => {
             required
           />
           <datalist id="alunos-sugestoes">
-            {buscarAlunos(alunosMock.alunos.map(a => a.nome).join(' ') || '').map(alunos => (
-              <option key={alunos.id} value={alunos.nome} />
+            {buscarAlunos(aluno?.nome || '').map(aluno => (
+              <option key={aluno.id} value={aluno.nome} />
             ))}
           </datalist>
         </label>
@@ -426,8 +435,8 @@ export const EstruturaRefeicoesForm: React.FC = () => {
                         required
                       >
                         <option value="">Selecione</option>
-                        {unidadesMedida.unidadesMedida.map(unidade => (
-                          <option key={unidade.id} value={unidade.sigla}>{unidade.nome}</option>
+                        {unidadesMedida.map(u => (
+                          <option key={u} value={u}>{u}</option>
                         ))}
                       </select>
                     </label>
