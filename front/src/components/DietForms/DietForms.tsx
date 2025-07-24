@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import styles from './DietForms.module.css';
 import {
   DietaPlan,
@@ -34,25 +35,7 @@ export const EstruturaRefeicoesForm: React.FC = () => {
   const [dataFim, setDataFim] = useState('');
   const [comorbidades, setComorbidades] = useState('');
   const [observacoesAdicionais, setObservacoesAdicionais] = useState('');
-
-  const resetForm = () => {
-  console.log('Resetando o formulário para o estado inicial...');
-  // Reseta todos os estados para seus valores iniciais
-  setAluno(null);
-  setNomeDieta('');
-  setObjetivo('');
-  setProfissionalResponsavel('');
-  setDataInicio('');
-  setDataFim('');
-  setComorbidades('');
-  setObservacoesAdicionais('');
-
-  // Reseta a estrutura de refeições para o padrão inicial
-  setRefeicoes([
-    { nome: '', horario: '', alimentos: [{ alimento: '', quantidade: 0, unidade: '' }] }
-  ]);
-  
-};
+  const router = useRouter();
 
   // Estado para o plano de dieta
   const [dietaPlan, setDietaPlan] = useState<DietaPlan[]>([
@@ -262,15 +245,12 @@ export const EstruturaRefeicoesForm: React.FC = () => {
   };
 
   const handleCancelar = () => {
-    const confirmacao = window.confirm('Você tem certeza que deseja cancelar? Todas as alterações não salvas, incluindo o rascunho, serão perdidas.')
-    if (confirmacao) {
-      resetForm();
-      localStorage.removeItem('rascunhoDieta'); // Limpa o rascunho salvo
-      alert('O formulário foi limpo.');
-    }
-    else{
-      alert('Operação cancelada. Você pode continuar editando o formulário.');
-    }
+    const confirmacao = window.confirm(
+    'Você tem certeza que deseja cancelar? As alterações não salvas serão perdidas.'
+  );
+  if (confirmacao) {
+    router.back(); 
+  }
   };
 
 
