@@ -1,0 +1,32 @@
+{
+    "alimentosBanco": [
+        {
+            "nome": "Arroz",
+            "calorias": 130,
+            "proteinas": 2.7,
+            "carboidratos": 28,
+            "gorduras": 0.3
+        },
+        {
+            "nome": "Feijão",
+            "calorias": 76,
+            "proteinas": 4.5,
+            "carboidratos": 14,
+            "gorduras": 0.5
+        },
+        {
+            "nome": "Frango",
+            "calorias": 165,
+            "proteinas": 31,
+            "carboidratos": 0,
+            "gorduras": 3.6
+        },
+        {
+            "nome": "Ovo",
+            "calorias": 155,
+            "proteinas": 13,
+            "carboidratos": 1.1,
+            "gorduras": 11
+        }
+    ]
+}
