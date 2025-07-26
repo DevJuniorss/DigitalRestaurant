@@ -36,3 +36,43 @@ body {
   color: var(--foreground);
   font-family: "Public Sans", Arial, Helvetica, sans-serif;
 }
+
+/* Por padrão, esconde o que é só de impressão e mostra o de tela */
+.print-only {
+  display: none;
+}
+.screen-only {
+  display: block;
+}
+
+/* Estilos globais para o botão de imprimir */
+
+/* Regras que se aplicam APENAS na hora de imprimir */
+@media print {
+  /* Esconde tudo que for só para tela */
+  .screen-only {
+    display: none !important;
+  }
+  
+  /* Mostra o que é só para impressão */
+  .print-only {
+    display: block !important;
+  }
+  
+  /* Zera os estilos do modal para que ele não apareça no papel */
+  .modalOverlay {
+    background: none !important;
+  }
+  .modalContent {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+  }
+  .modalContent .closeButton {
+    display: none !important;
+  }
+}
