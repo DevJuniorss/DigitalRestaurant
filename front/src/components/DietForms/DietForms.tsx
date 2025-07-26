@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import styles from './DietForms.module.css';
+import Modal from '../Modal/Modal';
+import DietaPreview from '../DietPreview/DietPreview';
+
+
 import {
   DietaPlan,
   FoodItem,
@@ -8,6 +12,11 @@ import {
   Aluno,
   ResumoNutricional,
 } from "../../types/diet";
+
+type DietaComResumo = DietaPlan & {
+  resumoNutricional: ResumoNutricional;
+};
+
 
 const unidadesMedida = ['g', 'ml', 'unidade', 'fatia', 'colher', 'xícara'];
 
@@ -35,6 +44,17 @@ export const EstruturaRefeicoesForm: React.FC = () => {
   const [dataFim, setDataFim] = useState('');
   const [comorbidades, setComorbidades] = useState('');
   const [observacoesAdicionais, setObservacoesAdicionais] = useState('');
+
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewData, setPreviewData] = useState<DietaComResumo | null>(null);
+
+
+  // Estado para o modal de pré-visualização
+  type DietaComResumo = DietaPlan & {
+    resumoNutricional: ResumoNutricional;
+  };
+
+
   const router = useRouter();
 
   // Estado para o plano de dieta
@@ -76,7 +96,7 @@ export const EstruturaRefeicoesForm: React.FC = () => {
       carboidratosTotais: Math.round(carboidratos * 10) / 10,
       gordurasTotais: Math.round(gorduras * 10) / 10,
     });
-    
+
   }, [refeicoes]);
 
   useEffect(() => {
@@ -189,31 +209,31 @@ export const EstruturaRefeicoesForm: React.FC = () => {
 
   const carregarRascunho = () => {
     try {
-        const rascunhoSalvo = localStorage.getItem('rascunhoDieta');
+      const rascunhoSalvo = localStorage.getItem('rascunhoDieta');
 
-        if (rascunhoSalvo) {
-            console.log("Rascunho encontrado! Carregando...");
-            const dadosDoRascunho = JSON.parse(rascunhoSalvo);
+      if (rascunhoSalvo) {
+        console.log("Rascunho encontrado! Carregando...");
+        const dadosDoRascunho = JSON.parse(rascunhoSalvo);
 
-            // Atualiza todos os estados do formulário com os dados do rascunho
-            setAluno(dadosDoRascunho.aluno || null);
-            setNomeDieta(dadosDoRascunho.nomeDieta || '');
-            setProfissionalResponsavel(dadosDoRascunho.profissionalResponsavel || '');
-            setDataInicio(dadosDoRascunho.dataInicio || '');
-            setDataFim(dadosDoRascunho.dataFim || '');
-            setObjetivo(dadosDoRascunho.objetivo || '');
-            setComorbidades(dadosDoRascunho.comorbidades || '');
-            setRefeicoes(dadosDoRascunho.refeicoes || [{ nome: '', horario: '', alimentos: [] }]);
-            setObservacoesAdicionais(dadosDoRascunho.observacoesAdicionais || '');
+        // Atualiza todos os estados do formulário com os dados do rascunho
+        setAluno(dadosDoRascunho.aluno || null);
+        setNomeDieta(dadosDoRascunho.nomeDieta || '');
+        setProfissionalResponsavel(dadosDoRascunho.profissionalResponsavel || '');
+        setDataInicio(dadosDoRascunho.dataInicio || '');
+        setDataFim(dadosDoRascunho.dataFim || '');
+        setObjetivo(dadosDoRascunho.objetivo || '');
+        setComorbidades(dadosDoRascunho.comorbidades || '');
+        setRefeicoes(dadosDoRascunho.refeicoes || [{ nome: '', horario: '', alimentos: [] }]);
+        setObservacoesAdicionais(dadosDoRascunho.observacoesAdicionais || '');
 
-            alert('Um rascunho salvo foi carregado.');
-        }
+        alert('Um rascunho salvo foi carregado.');
+      }
     } catch (error) {
-        console.error("Erro ao carregar ou processar o rascunho:", error);
-        // Opcional: remover o rascunho corrompido
-        localStorage.removeItem('rascunhoDieta');
+      console.error("Erro ao carregar ou processar o rascunho:", error);
+      // remove o rascunho corrompido
+      localStorage.removeItem('rascunhoDieta');
     }
-};
+  };
 
   const handleSalvarRascunho = () => {
     const dadosRascunho = {
@@ -241,16 +261,37 @@ export const EstruturaRefeicoesForm: React.FC = () => {
 
 
   const handlePrevisualizar = () => {
-    
-  };
+    if (!aluno || !nomeDieta) {
+      alert('Por favor, preencha o nome do aluno e da dieta antes de pré-visualizar.');
+      return;
+    }
+    const dadosBase: DietaPlan = {
+      aluno,
+      nomeDieta,
+      profissionalResponsavel,
+      dataInicio,
+      dataFim,
+      objetivo,
+      comorbidades,
+      refeicoes,
+      observacoesAdicionais,
+    };
+    const dadosParaPreview: DietaComResumo = {
+      ...dadosBase,
+      resumoNutricional: resumoNutricional, // `resumoNutricional` vem do seu useMemo/useState
+    };
+    setPreviewData(dadosParaPreview);
+    setIsPreviewOpen(true);
+  }
+
 
   const handleCancelar = () => {
     const confirmacao = window.confirm(
-    'Você tem certeza que deseja cancelar? As alterações não salvas serão perdidas.'
-  );
-  if (confirmacao) {
-    router.back(); 
-  }
+      'Você tem certeza que deseja cancelar? As alterações não salvas serão perdidas.'
+    );
+    if (confirmacao) {
+      router.back();
+    }
   };
 
 
@@ -544,10 +585,30 @@ export const EstruturaRefeicoesForm: React.FC = () => {
         <button className={`${styles.button} ${styles.previewButton}`} type="button" onClick={handlePrevisualizar}>
           Pré-visualizar / Imprimir
         </button>
+        {/* O Modal para a pré-visualização */}
+        <Modal isOpen={isPreviewOpen} onClose={() => setIsPreviewOpen(false)}>
+          {/* Garantimos que só renderizamos o preview se houver dados */}
+          {previewData && (
+            <>
+              <DietaPreview dietaData={previewData} />
+              <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                {/* O botão de impressão agora vive DENTRO do modal */}
+                <button
+                  className={`${styles.button} ${styles.printButton}`} // Crie um estilo para este botão
+                  onClick={() => window.print()}
+                >
+                  Imprimir Dieta
+                </button>
+              </div>
+            </>
+          )}
+        </Modal>
         <button className={styles.cancelButton} type="button" onClick={handleCancelar}>
           Cancelar
         </button>
       </div>
+
+
     </form>
   );
 };
