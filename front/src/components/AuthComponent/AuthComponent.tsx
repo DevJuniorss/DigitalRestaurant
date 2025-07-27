@@ -43,7 +43,7 @@ export const AuthComponent: React.FC = () => {
           if (auth.currentUser) {
             await updateProfile(auth.currentUser, { displayName: name });
           }
-          alert(`Bem-vindo, ${name}! Cadastro realizado com sucesso.`);
+          alert(`Cadastro realizado com sucesso.`);
           router.push('/');
         } catch (err: any) {
           alert(`Erro ao cadastrar: ${err.code}`);
