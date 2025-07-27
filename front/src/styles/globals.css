@@ -16,62 +16,63 @@
   padding: 0;
   box-sizing: border-box;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  @theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: "Public Sans", Arial, Helvetica, sans-serif;
-}
-
-/* Por padrão, esconde o que é só de impressão e mostra o de tela */
-.print-only {
-  display: none;
-}
-.screen-only {
-  display: block;
-}
-
-/* Estilos globais para o botão de imprimir */
-
-/* Regras que se aplicam APENAS na hora de imprimir */
-@media print {
-  /* Esconde tudo que for só para tela */
-  .screen-only {
-    display: none !important;
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: #0a0a0a;
+      --foreground: #ededed;
+    }
   }
-  
-  /* Mostra o que é só para impressão */
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: "Public Sans", Arial, Helvetica, sans-serif;
+  }
+
+  /* Por padrão, esconde o que é só de impressão e mostra o de tela */
   .print-only {
-    display: block !important;
+    display: none;
   }
-  
-  /* Zera os estilos do modal para que ele não apareça no papel */
-  .modalOverlay {
-    background: none !important;
+  .screen-only {
+    display: block;
   }
-  .modalContent {
-    box-shadow: none !important;
-    border: none !important;
-    padding: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 100% !important;
-    max-height: 100% !important;
-  }
-  .modalContent .closeButton {
-    display: none !important;
+
+  /* Estilos globais para o botão de imprimir */
+
+  /* Regras que se aplicam APENAS na hora de imprimir */
+  @media print {
+    /* Esconde tudo que for só para tela */
+    .screen-only {
+      display: none !important;
+    }
+
+    /* Mostra o que é só para impressão */
+    .print-only {
+      display: block !important;
+    }
+
+    /* Zera os estilos do modal para que ele não apareça no papel */
+    .modalOverlay {
+      background: none !important;
+    }
+    .modalContent {
+      box-shadow: none !important;
+      border: none !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 100% !important;
+      max-height: 100% !important;
+    }
+    .modalContent .closeButton {
+      display: none !important;
+    }
   }
 }
