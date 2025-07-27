@@ -4,10 +4,9 @@ import { NavBar } from "./NavBar";
 import { ProfileMenu } from "./ProfileMenu";
 import styles from "./Header.module.css";
 const NAV_ITEMS = [
-  { href: "/consulta-cardapio", label: "Cardápio" },
-  { href: "/criar-dieta", label: "Dieta" },
-  { href: "/adicionar-refeicao", label: "Refeição" },
-  { href: "/sobre", label: "Sobre" },
+  { href: "/calendar", label: "Cardápio" },
+  { href: "/diet", label: "Dieta" },
+  { href: "/addMeal", label: "Refeição" },
 ];
 
 export const Header: React.FC = () => (
