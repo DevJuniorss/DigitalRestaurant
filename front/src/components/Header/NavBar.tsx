@@ -1,17 +1,18 @@
 import React from "react";
 import styles from "./NavBar.module.css";
 
-const NAV_ITEMS = [
-  { href: "/consulta-cardapio", label: "Cardápio" },
-  { href: "/criar-dieta", label: "Dieta" },
-  { href: "/adicionar-refeicao", label: "Refeição" },
-  { href: "/sobre", label: "Sobre" },
-];
 
+type NavItensProps = {
+  href: string;
+  label: string;
+}
+type NavBarProps = {
+  navItems?: NavItensProps[];
+};
 
-export const NavBar: React.FC = () => (
+export const NavBar: React.FC<NavBarProps> = ({ navItems }) => (
   <ul className={styles.navList}>
-    {NAV_ITEMS.map(({ label, href }) => (
+    {navItems?.map(({ label, href }) => (
       <li key={href}>
         <a href={href} className={styles.navLink}>
           {label}
