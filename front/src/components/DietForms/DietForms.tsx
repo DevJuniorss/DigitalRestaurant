@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { db, auth } from '../../lib/firebase'; 
+import { unidadesMedida } from '@/utils/constants';
+
 import { 
   collection, 
   addDoc,       // Para criar um documento novo
@@ -31,10 +33,6 @@ type DietaFirestore = Omit<DietaPlan, 'aluno'> & {
   status: 'ativo' | 'inativo' | 'rascunho'; // Adicionando status para controle, incluindo 'rascunho'
   userId: string; // ID do usuário que criou a dieta
 };
-
-
-const unidadesMedida = ['g', 'ml', 'unidade', 'fatia', 'colher', 'xícara'];
-
 
 
 export const EstruturaRefeicoesForm: React.FC = () => {
