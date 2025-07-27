@@ -1,5 +1,8 @@
 import React, { FormEvent } from "react";
 import styles from "./AddMeal.module.css";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../../lib/firebase"; // Ajuste o caminho se necessário
+
 
 const diasSemana = [
   "Segunda",
@@ -8,7 +11,7 @@ const diasSemana = [
   "Quinta",
   "Sexta",
   "Sábado",
-  "Domingo"
+  "Domingo",
 ];
 
 type AddMealProps = {
@@ -17,11 +20,26 @@ type AddMealProps = {
 };
 
 export const AddMeal: React.FC<AddMealProps> = ({ onCancel, onSave }) => {
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const data = Object.fromEntries(fd.entries());
-    onSave(data);
+    const diaDaSemana = data.diaSemana as string;
+    if (!diaDaSemana) {
+      alert("Por favor, selecione um dia da semana.");
+      return;
+    }
+    try {
+      const docRef = doc(db, "cardapios", diaDaSemana);
+      await setDoc(docRef, data);
+      alert(`Cardápio para ${diaDaSemana} salvo com sucesso!`);
+      onSave(data);
+    }
+    catch (error) {
+      console.error("Erro ao salvar o cardápio:", error);
+      alert("Ocorreu um erro ao salvar o cardápio.");
+    }
+
   }
 
   return (
