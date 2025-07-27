@@ -46,7 +46,7 @@ export const AuthComponent: React.FC = () => {
           alert(`Cadastro realizado com sucesso.`);
           router.push('/');
         } catch (err: any) {
-          alert(`Erro ao cadastrar: ${err.code}`);
+          console.error("Erro no cadastro:", err.code);
           if (err.code === 'auth/email-already-in-use') {
             setError('Este email já está em uso.');
           }
@@ -66,7 +66,7 @@ export const AuthComponent: React.FC = () => {
           alert('Login realizado com sucesso!');
           router.push('/');
         } catch (err: any) {
-          alert(`Erro no login: ${err.code}`);
+          console.error("Erro no login:", err.code);
           if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
             setError('Email ou senha inválidas.');
           }
