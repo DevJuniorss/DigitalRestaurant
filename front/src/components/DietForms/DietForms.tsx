@@ -1,6 +1,18 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import styles from './DietForms.module.css';
+import { db, auth } from '../../lib/firebase'; 
+import { unidadesMedida } from '@/utils/constants';
+
+import { 
+  collection, 
+  addDoc,       // Para criar um documento novo
+  doc,          // Para referenciar um documento existente
+  updateDoc,    // Para atualizar um documento existente
+  query, 
+  where, 
+  limit, 
+  getDocs 
+} from 'firebase/firestore';import styles from './DietForms.module.css';
 import Modal from '../Modal/Modal';
 import DietaPreview from '../DietPreview/DietPreview';
 
@@ -13,29 +25,23 @@ import {
   ResumoNutricional,
 } from "../../types/diet";
 
-type DietaComResumo = DietaPlan & {
+type DietaFirestore = Omit<DietaPlan, 'aluno'> & {
+  alunoId: string;
+  alunoNome: string; // Guardar o nome facilita listagens futuras
+  criadoEm: Date;
   resumoNutricional: ResumoNutricional;
+  status: 'ativo' | 'inativo' | 'rascunho'; // Adicionando status para controle, incluindo 'rascunho'
+  userId: string; // ID do usuário que criou a dieta
 };
 
 
-const unidadesMedida = ['g', 'ml', 'unidade', 'fatia', 'colher', 'xícara'];
-
-// Mock de dados para busca
-const alunosMock: Aluno[] = [
-  { id: 1, nome: 'João Silva', email: 'joao@email.com' },
-  { id: 2, nome: 'Maria Santos', email: 'maria@email.com' },
-  { id: 3, nome: 'Pedro Costa', email: 'pedro@email.com' },
-];
-
-const alimentosBanco = [
-  { nome: 'Arroz', calorias: 130, proteinas: 2.7, carboidratos: 28, gorduras: 0.3 },
-  { nome: 'Feijão', calorias: 76, proteinas: 4.5, carboidratos: 14, gorduras: 0.5 },
-  { nome: 'Frango', calorias: 165, proteinas: 31, carboidratos: 0, gorduras: 3.6 },
-  { nome: 'Ovo', calorias: 155, proteinas: 13, carboidratos: 1.1, gorduras: 11 },
-];
-
 export const EstruturaRefeicoesForm: React.FC = () => {
+   const router = useRouter();
   // Estados principais
+
+   // Estados para os dados que virão do Firebase
+  const [alunosBanco, setAlunosBanco] = useState<Aluno[]>([]);
+  const [alimentosBanco, setAlimentosBanco] = useState<any[]>([]); // Use 'any' por enquanto ou crie um type para o alimento
   const [aluno, setAluno] = useState<Aluno | null>(null);
   const [nomeDieta, setNomeDieta] = useState('');
   const [objetivo, setObjetivo] = useState('');
@@ -44,6 +50,7 @@ export const EstruturaRefeicoesForm: React.FC = () => {
   const [dataFim, setDataFim] = useState('');
   const [comorbidades, setComorbidades] = useState('');
   const [observacoesAdicionais, setObservacoesAdicionais] = useState('');
+  const [rascunhoId, setRascunhoId] = useState<string | null>(null);
 
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewData, setPreviewData] = useState<DietaComResumo | null>(null);
@@ -55,7 +62,7 @@ export const EstruturaRefeicoesForm: React.FC = () => {
   };
 
 
-  const router = useRouter();
+ 
 
   // Estado para o plano de dieta
   const [dietaPlan, setDietaPlan] = useState<DietaPlan[]>([
@@ -100,8 +107,28 @@ export const EstruturaRefeicoesForm: React.FC = () => {
   }, [refeicoes]);
 
   useEffect(() => {
-    // Carregar rascunho salvo ao montar o componente
-    carregarRascunho();
+    const fetchData = async () => {
+      // Buscar Alunos
+      const alunosSnapshot = await getDocs(collection(db, "alunos"));
+
+      const currentUserId = auth.currentUser?.uid; // Exemplo
+        if (currentUserId) {
+            await carregarRascunho(currentUserId);
+        }
+
+      const alunosList = alunosSnapshot.docs.map(doc => ({
+        id: doc.id, // O ID do documento Firestore (string)
+        ...doc.data(),
+      })) as Aluno[];
+      setAlunosBanco(alunosList);
+
+      // Buscar Alimentos (a lógica permanece a mesma)
+      const alimentosSnapshot = await getDocs(collection(db, "alimentos"));
+      const alimentosList = alimentosSnapshot.docs.map(doc => doc.data());
+      setAlimentosBanco(alimentosList);
+    };
+
+    fetchData().catch(console.error);
   }, []);
 
   // Funções existentes (updateRefeicao, updateAlimento, etc.) mantidas iguais...
@@ -155,89 +182,33 @@ export const EstruturaRefeicoesForm: React.FC = () => {
   };
 
   const buscarAlunos = (query: string) => {
-    if (!query) return alunosMock;
-    return alunosMock.filter(a =>
+    if (!query) return alunosBanco;
+    return alunosBanco.filter(a =>
       a.nome.toLowerCase().includes(query.toLowerCase()) ||
       a.email.toLowerCase().includes(query.toLowerCase())
     );
   };
 
-  const salvarComoJson = async (dados: any, nomeArquivo: string) => {
-    const jsonString = JSON.stringify(dados, null, 2);
-
-    const blob = new Blob([jsonString], { type: 'application/json' });
-
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = nomeArquivo || 'dados.json';
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    URL.revokeObjectURL(url);
-
-  };
-
   // Funções dos botões de ação
-  const handleSalvarDieta = async () => {
+  const handleSalvarDieta = async (event: React.FormEvent) => {
+    event.preventDefault();
 
-    const dadosAtuaisDaDieta = {
-      aluno,
-      nomeDieta,
-      profissionalResponsavel,
-      dataInicio,
-      dataFim,
-      objetivo,
-      comorbidades,
-      refeicoes, // 'refeicoes' vem do estado e está atualizado.
-      observacoesAdicionais,
-    };
-    setDietaPlan([dadosAtuaisDaDieta]); // Atualiza o estado com os dados atuais
-    const nomeDoArquivo = `dieta_${dadosAtuaisDaDieta.aluno?.nome || 'aluno'}_${dadosAtuaisDaDieta.nomeDieta || 'plano'}.json`;
-    try {
-      await salvarComoJson([dadosAtuaisDaDieta], nomeDoArquivo);
-      alert('Seu plano de dieta foi salvo com sucesso!');
-      localStorage.removeItem('rascunhoDieta');
-    } catch (error) {
-      console.error('Erro ao salvar o plano de dieta:', error);
-      alert('Ocorreu um erro ao salvar o plano de dieta. Por favor, tente novamente.');
+    const userId = auth.currentUser?.uid;
+    if (!userId) {
+        alert("Você precisa estar logado para salvar uma dieta.");
+        return;
     }
-  };
 
-  const carregarRascunho = () => {
-    try {
-      const rascunhoSalvo = localStorage.getItem('rascunhoDieta');
 
-      if (rascunhoSalvo) {
-        console.log("Rascunho encontrado! Carregando...");
-        const dadosDoRascunho = JSON.parse(rascunhoSalvo);
-
-        // Atualiza todos os estados do formulário com os dados do rascunho
-        setAluno(dadosDoRascunho.aluno || null);
-        setNomeDieta(dadosDoRascunho.nomeDieta || '');
-        setProfissionalResponsavel(dadosDoRascunho.profissionalResponsavel || '');
-        setDataInicio(dadosDoRascunho.dataInicio || '');
-        setDataFim(dadosDoRascunho.dataFim || '');
-        setObjetivo(dadosDoRascunho.objetivo || '');
-        setComorbidades(dadosDoRascunho.comorbidades || '');
-        setRefeicoes(dadosDoRascunho.refeicoes || [{ nome: '', horario: '', alimentos: [] }]);
-        setObservacoesAdicionais(dadosDoRascunho.observacoesAdicionais || '');
-
-        alert('Um rascunho salvo foi carregado.');
-      }
-    } catch (error) {
-      console.error("Erro ao carregar ou processar o rascunho:", error);
-      // remove o rascunho corrompido
-      localStorage.removeItem('rascunhoDieta');
+    if (!aluno || !nomeDieta || !profissionalResponsavel) {
+      alert('Por favor, preencha os campos obrigatórios: Aluno, Nome da Dieta e Profissional Responsável.');
+      return;
     }
-  };
 
-  const handleSalvarRascunho = () => {
-    const dadosRascunho = {
-      aluno,
+    // Criamos o objeto que será enviado ao Firestore
+    const dadosDaDieta: DietaFirestore = {
+      alunoId: aluno.id, // Armazenamos a referência (ID string)
+      alunoNome: aluno.nome,
       nomeDieta,
       profissionalResponsavel,
       dataInicio,
@@ -246,15 +217,113 @@ export const EstruturaRefeicoesForm: React.FC = () => {
       comorbidades,
       refeicoes,
       observacoesAdicionais,
-      isRascunho: true,
+      resumoNutricional,
+      status: 'ativo',
+      userId: 'user-id-placeholder', // Substitua pelo ID do usuário autenticado 
+      criadoEm: new Date(),
     };
-    try {
-      const dadosEmJson = JSON.stringify(dadosRascunho);
-      localStorage.setItem('rascunhoDieta', dadosEmJson);
-      alert('Rascunho salvo com sucesso! Você pode continuar de onde parou mais tarde.');
+
+   try {
+        if (rascunhoId) {
+            // Se viemos de um rascunho, atualizamos o documento existente
+            const dietaRef = doc(db, "dietas", rascunhoId);
+            await updateDoc(dietaRef, dadosDaDieta);
+            alert('Dieta publicada com sucesso!');
+        } else {
+            // Se não, criamos um documento novo
+            await addDoc(collection(db, "dietas"), {
+                ...dadosDaDieta,
+                criadoEm: new Date(),
+            });
+            alert('Dieta salva com sucesso!');
+        }
+        setRascunhoId(null); // Limpa o ID do rascunho
+       
     } catch (error) {
-      console.error('Erro ao salvar rascunho:', error);
-      alert('Ocorreu um erro ao salvar o rascunho. Por favor, tente novamente.');
+       
+    }
+  };
+
+  const carregarRascunho = async (userId: string) => {
+    if (!userId) return; // Não faz nada se não houver usuário
+
+  // Criamos uma consulta para buscar na coleção 'dietas'
+  const q = query(
+    collection(db, "dietas"),
+    where("userId", "==", userId),      // Onde o userId corresponde ao do usuário logado
+    where("status", "==", "rascunho"),  // E o status é 'rascunho'
+    limit(1)                            // Queremos apenas um rascunho por vez
+  );
+
+  try {
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const rascunhoDoc = querySnapshot.docs[0];
+      const dadosDoRascunho = rascunhoDoc.data() as DietaFirestore;
+
+      console.log("Rascunho do Firebase encontrado! Carregando...");
+
+      // Preenchemos o formulário
+      // ATENÇÃO: A lógica para 'setAluno' precisa ser ajustada
+      // Precisamos encontrar o objeto Aluno completo a partir do alunoId salvo
+      const alunoCompleto = alunosBanco.find(a => a.id === dadosDoRascunho.alunoId);
+      setAluno(alunoCompleto || null);
+
+      setNomeDieta(dadosDoRascunho.nomeDieta || '');
+      setProfissionalResponsavel(dadosDoRascunho.profissionalResponsavel || '');
+      // ... preencha os outros estados ...
+      setRefeicoes(dadosDoRascunho.refeicoes || []);
+      
+      // MUITO IMPORTANTE: Guardamos o ID do rascunho para poder atualizá-lo depois
+      setRascunhoId(rascunhoDoc.id);
+
+      alert('Um rascunho salvo do Firebase foi carregado.');
+    }
+  } catch (error) {
+    console.error("Erro ao carregar rascunho do Firebase:", error);
+  }
+  };
+
+  const handleSalvarRascunho = async () => {
+   const user =  auth.currentUser;
+    if (!user) {
+        alert("Você precisa estar logado para salvar um rascunho.");
+        return;
+    }
+    const dadosRascunho: Omit<DietaFirestore, 'criadoEm'> = {
+      alunoId: aluno?.id || '',
+      alunoNome: aluno?.nome || '',
+      nomeDieta,
+      profissionalResponsavel,
+      dataInicio,
+      dataFim,
+      objetivo,
+      comorbidades,
+      refeicoes,
+      observacoesAdicionais,
+      resumoNutricional,
+      status: 'rascunho' as const, // Definindo o status
+      userId: user.uid,     // Associando ao usuário
+    };
+
+    try {
+        if (rascunhoId) {
+            // Se já estamos editando um rascunho, nós o ATUALIZAMOS
+            const rascunhoRef = doc(db, "dietas", rascunhoId);
+            await updateDoc(rascunhoRef, dadosRascunho);
+            alert('Rascunho atualizado com sucesso!');
+        } else {
+            // Se for um rascunho novo, nós o CRIAMOS
+            const docRef = await addDoc(collection(db, "dietas"), {
+                ...dadosRascunho,
+                criadoEm: new Date(),
+            });
+            setRascunhoId(docRef.id); // Guardamos o ID do novo rascunho
+            alert('Rascunho salvo com sucesso!');
+        }
+    } catch (error) {
+        console.error('Erro ao salvar rascunho no Firebase:', error);
+        alert('Ocorreu um erro ao salvar o rascunho.');
     }
   };
 
@@ -310,18 +379,18 @@ export const EstruturaRefeicoesForm: React.FC = () => {
             type="text"
             value={aluno?.nome || ''}
             onChange={(e) => {
-              const alunoEncontrado = alunosMock.find(a => a.nome === e.target.value);
-              setAluno(alunoEncontrado || null);
+              const alunoEncontrado = alunosBanco.find(a => a.nome === e.target.value);
+            setAluno(alunoEncontrado || null);
             }}
             list="alunos-sugestoes"
             placeholder="Digite o nome do aluno"
             required
           />
-          <datalist id="alunos-sugestoes">
-            {buscarAlunos(aluno?.nome || '').map(aluno => (
-              <option key={aluno.id} value={aluno.nome} />
-            ))}
-          </datalist>
+         <datalist id="alunos-sugestoes">
+          {alunosBanco.map(alunoItem => (
+            <option key={alunoItem.id} value={alunoItem.nome} />
+          ))}
+        </datalist>
         </label>
 
         <div className={styles.flexRow}>
