@@ -2,17 +2,7 @@ import React, { FormEvent } from "react";
 import styles from "./AddMeal.module.css";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase"; // Ajuste o caminho se necessário
-
-
-const diasSemana = [
-  "Segunda",
-  "Terça",
-  "Quarta",
-  "Quinta",
-  "Sexta",
-  "Sábado",
-  "Domingo",
-];
+import { diasSemana } from "../../utils/constants"; // Certifique-se de que este arquivo exista
 
 type AddMealProps = {
   onCancel: () => void;
