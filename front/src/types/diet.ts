@@ -33,7 +33,7 @@ export type Refeicao = {
 };
 
 export type Aluno = {
-  id: number;
+  id: string;
   nome: string;
   email: string;
 };
