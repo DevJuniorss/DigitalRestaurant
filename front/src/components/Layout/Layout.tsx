@@ -10,7 +10,7 @@ type LayoutProps = {
 // O Layout aceita uma lista de rotas sem Header (OCP)
 export const Layout = ({
   children,
-  excludeHeaderRoutes = ["/login"],
+  excludeHeaderRoutes = ["/login", "/"],
 }: LayoutProps) => {
   const { pathname } = useRouter();
   const showHeader = !excludeHeaderRoutes.includes(pathname);
