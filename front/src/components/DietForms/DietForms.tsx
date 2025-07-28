@@ -652,7 +652,7 @@ export const EstruturaRefeicoesForm: React.FC = () => {
           Salvar como Rascunho
         </button>
         <button className={`${styles.button} ${styles.previewButton}`} type="button" onClick={handlePrevisualizar}>
-          Pré-visualizar / Imprimir
+          Pré-visualizar Dieta
         </button>
         {/* O Modal para a pré-visualização */}
         <Modal isOpen={isPreviewOpen} onClose={() => setIsPreviewOpen(false)} titleId='preview-title'>
@@ -661,15 +661,6 @@ export const EstruturaRefeicoesForm: React.FC = () => {
             <>
             <h1 id="preview-title" className={styles.srOnly}>Pré-visualização da Dieta</h1>
               <DietaPreview dietaData={previewData} />
-              <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-                {/* O botão de impressão agora vive DENTRO do modal */}
-                <button
-                  className={`${styles.button} ${styles.printButton}`} // Crie um estilo para este botão
-                  onClick={() => window.print()}
-                >
-                  Imprimir Dieta
-                </button>
-              </div>
             </>
           )}
         </Modal>
