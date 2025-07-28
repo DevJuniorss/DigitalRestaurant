@@ -655,10 +655,11 @@ export const EstruturaRefeicoesForm: React.FC = () => {
           Pré-visualizar / Imprimir
         </button>
         {/* O Modal para a pré-visualização */}
-        <Modal isOpen={isPreviewOpen} onClose={() => setIsPreviewOpen(false)}>
+        <Modal isOpen={isPreviewOpen} onClose={() => setIsPreviewOpen(false)} titleId='preview-title'>
           {/* Garantimos que só renderizamos o preview se houver dados */}
           {previewData && (
             <>
+            <h1 id="preview-title" className={styles.srOnly}>Pré-visualização da Dieta</h1>
               <DietaPreview dietaData={previewData} />
               <div style={{ textAlign: 'center', marginTop: '2rem' }}>
                 {/* O botão de impressão agora vive DENTRO do modal */}
