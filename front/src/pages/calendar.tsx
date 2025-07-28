@@ -5,13 +5,35 @@ import { db } from '../lib/firebase';
 
 import { WeeklyCalendar } from '../components/WeeklyCalendar/WeeklyCalendar';
 
-type WeekCard = {
-  label: string;
-  meal: any;
-}
+type MealGroup = { title: string; items: string[] };
+type Meal = { title: string; groups: MealGroup[] };
+type WeekCard = { label: string; meal: Meal };
+
 
 const weekDays = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
 
+const transformDataToMeal = (data: any): Meal => {
+  if (!data || Object.keys(data).length === 0) {
+    return { title: 'Cardápio não definido', groups: [] };
+  }
+  return {
+    title: `Cardápio de ${data.diaSemana}`, // Podemos gerar um título dinâmico
+    groups: [
+      {
+        title: 'Proteínas',
+        items: [data.carneVermelha, data.carneBranca, data.vegetariana].filter(Boolean),
+      },
+      {
+        title: 'Acompanhamentos',
+        items: [data.salada, data.carboidrato1].filter(Boolean),
+      },
+      {
+        title: 'Bebidas',
+        items: [data.bebida].filter(Boolean),
+      },
+    ],
+  };
+};
 
 export default function CalendarPage() {
   const [weekCards, setWeekCards] = useState<WeekCard[]>([]);
@@ -26,13 +48,13 @@ export default function CalendarPage() {
         querySnapshot.forEach((doc) => {
           fetchedMeals[doc.id] = doc.data();
         });
-        const newWeekCards: WeekCard[] = weekDays.map((day) => ({
+        const newWeekCards = weekDays.map((day) => ({
           label: day,
-          meal: fetchedMeals[day] || {title: 'Cardápio não definido', groups: []},
+          meal: transformDataToMeal(fetchedMeals[day]),
         }));
         setWeekCards(newWeekCards);
       } catch (error) {
-        console.error("Error ao buscar os cardápios da semana:", error);
+        console.error("Error ao buscar os cardápios", error);
       } finally {
         setLoading(false);
       }
