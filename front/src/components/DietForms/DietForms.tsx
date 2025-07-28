@@ -89,10 +89,10 @@ export const EstruturaRefeicoesForm: React.FC = () => {
         const alimentoInfo = alimentosBanco.find(a => a.nome === alimento.alimento);
         if (alimentoInfo && alimento.quantidade > 0) {
           const fator = alimento.quantidade / 100; // considerando valores por 100g
-          calorias += alimentoInfo.calorias * fator;
-          proteinas += alimentoInfo.proteinas * fator;
-          carboidratos += alimentoInfo.carboidratos * fator;
-          gorduras += alimentoInfo.gorduras * fator;
+          calorias += (alimentoInfo.calorias || 0) * fator;
+          proteinas += (alimentoInfo.proteinas || 0) * fator;
+          carboidratos += (alimentoInfo.carboidratos || 0) * fator;
+          gorduras += (alimentoInfo.gorduras || 0) * fator;
         }
       });
     });
@@ -104,7 +104,7 @@ export const EstruturaRefeicoesForm: React.FC = () => {
       gordurasTotais: Math.round(gorduras * 10) / 10,
     });
 
-  }, [refeicoes]);
+  }, [refeicoes, alimentosBanco]);
 
   useEffect(() => {
     const fetchData = async () => {
