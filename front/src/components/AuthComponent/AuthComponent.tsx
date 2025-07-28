@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useState } from 'react';
+import { AddMeal } from '../AddMeal/AddMeal';
 import { useRouter } from 'next/router';
 import styles from './AuthForm.module.css';
 import { auth } from '../../lib/firebase'; // Importando auth do Firebase
@@ -6,11 +9,14 @@ import { auth } from '../../lib/firebase'; // Importando auth do Firebase
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  updateProfile // Para salvar o nome do usuário no cadastro
+  updateProfile, // Para salvar o nome do usuário no cadastro
+  sendPasswordResetEmail // Para implementar a funcionalidade de recuperação de senha
 } from "firebase/auth";
 
 
 type AuthMode = 'signin' | 'signup';
+
+
 
 export const AuthComponent: React.FC = () => {
   const [authMode, setAuthMode] = useState<AuthMode>('signup');
@@ -21,6 +27,21 @@ export const AuthComponent: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+
+  const handlePasswordReset = async () => {
+    if (!email) {
+        setError("Por favor, digite seu e-mail para recuperar a senha.");
+        return;
+    }
+    try {
+        await sendPasswordResetEmail(auth, email);
+        alert("Um e-mail de recuperação de senha foi enviado para " + email);
+        setError(null);
+    } catch (err: any) {
+        setError("Não foi possível enviar o e-mail de recuperação.");
+        console.error(err);
+    }
+};
 
   const handleSignInMode = () => setAuthMode('signin');
   const handleSignUpMode = () => setAuthMode('signup');
@@ -63,7 +84,6 @@ export const AuthComponent: React.FC = () => {
     } else {
       try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        alert('Login realizado com sucesso!');
         router.push('/calendar'); // Redireciona para a página de calendário após o login
       } catch (err: any) {
         console.error("Erro no login:", err.code);
@@ -104,17 +124,11 @@ export const AuthComponent: React.FC = () => {
             <h2 className={`${styles.title} ${styles.titleSecond}`}>
               Criar Conta
             </h2>
-            <div className={styles.socialMedia}>
-              <ul className={styles.listSocialMedia}>
-                <li className={styles.itemSocialMedia}>f</li>
-                <li className={styles.itemSocialMedia}>g</li>
-                <li className={styles.itemSocialMedia}>l</li>
-              </ul>
-            </div>
             <p className={`${styles.description} ${styles.descriptionSecond}`}>
-              ou use seu email para registrar-se
+              Use seu email para registrar-se
             </p>
             <form className={styles.form} onSubmit={handleFormSubmit}>
+              {authMode === 'signup' && (
               <label className={styles.labelInput}>
                 <input
                   type="text"
@@ -124,6 +138,8 @@ export const AuthComponent: React.FC = () => {
                   onChange={(e) => setName(e.target.value)}
                 />
               </label>
+              )}
+
               <label className={styles.labelInput}>
                 <input
                   type="email"
@@ -174,16 +190,6 @@ export const AuthComponent: React.FC = () => {
             <h2 className={`${styles.title} ${styles.titleSecond}`}>
               Entrar
             </h2>
-            <div className={styles.socialMedia}>
-              <ul className={styles.listSocialMedia}>
-                <li className={styles.itemSocialMedia}>f</li>
-                <li className={styles.itemSocialMedia}>g</li>
-                <li className={styles.itemSocialMedia}>l</li>
-              </ul>
-            </div>
-            <p className={`${styles.description} ${styles.descriptionSecond}`}>
-              ou use sua conta de email
-            </p>
             <form className={styles.form} onSubmit={handleFormSubmit}>
               <label className={styles.labelInput}>
                 <input
@@ -203,9 +209,11 @@ export const AuthComponent: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </label>
-              <a href="#" className={styles.password}>
+              {authMode === 'signin' && (
+              <a href="#" onClick={handlePasswordReset} className={styles.password}>
                 esqueceu sua senha?
               </a>
+              )}
               <button className={`${styles.btn} ${styles.btnSecond}`} type="submit">
                 Entrar
               </button>
