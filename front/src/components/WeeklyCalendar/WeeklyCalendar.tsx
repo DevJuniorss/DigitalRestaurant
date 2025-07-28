@@ -8,7 +8,6 @@ type MealGroup = {
 };
 
 type Meal = {
-  id: number;
   title: string;
   groups: MealGroup[];
 };
