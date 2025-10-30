@@ -78,3 +78,9 @@ Ao finalizar o desenvolvimento na branch criada fazer um pull resquest para a br
 | **[Eduardo Nunes]** | Engenheiro de Software / Testes e Validação | [LinkedIn](https://www.linkedin.com/in/placeholder4) |
 
 ---
+
+## Documentos 
+| Documento | Descrição | Link |
+|------|---------|-----------|
+| Especificação | Documento Inicial sobre o projeto e seus objetivos | [Link](https://docs.google.com/document/d/1hSZR_LC2dgtwjJ9V1eMWURyeT7CpYFtXWyo8JpjV-iU/edit?tab=t.0)) |
+| Entrevista | Documento da entrevista com as stakeholders Maria e Marliane | [Link](https://docs.google.com/document/d/1IkwHg6S8j_wJslO4_DcE3M30LLwI4ct-/edit) |
