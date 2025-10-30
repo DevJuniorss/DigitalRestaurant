@@ -72,7 +72,7 @@ Ao finalizar o desenvolvimento na branch criada fazer um pull resquest para a br
 
 | Nome | Função | LinkedIn |
 |------|---------|-----------|
-| **[Alexandre Júnior]** | Engenheiro de Software/ Arquiteto de Software | [DevJuniorSS](https://www.linkedin.com/in/placeholder1](https://www.linkedin.com/in/devjuniorss/)) |
+| **[Alexandre Júnior]** | Engenheiro de Software/ Arquiteto de Software | [DevJuniorSS](https://www.linkedin.com/in/devjuniorss/) |
 | **[Artur Regis]** | Engenheiro de Software / Desenvolvedor | [LinkedIn](https://www.linkedin.com/in/placeholder2) |
 | **[Caio Caminha]** | Engenheiro de Software / Analista de Requisitos | [LinkedIn](https://www.linkedin.com/in/placeholder3) |
 | **[Eduardo Nunes]** | Engenheiro de Software / Testes e Validação | [LinkedIn](https://www.linkedin.com/in/placeholder4) |
